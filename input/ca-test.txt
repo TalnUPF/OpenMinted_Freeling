@@ -1,0 +1,4 @@
+Digues-li a la teva germana que ja tinc apunt el Freeling per català.
+Aquest fitxer permet saber si el grup TALN, de la Universitat Pompeu Fabra, ha integrat el Freeling amb UIMA per el projecte del BSC.
+Amb el compilador de català des de Vilafranca del Pendès a Vilanomva i la Geltrú podran usar eines de tractament digital.
+
