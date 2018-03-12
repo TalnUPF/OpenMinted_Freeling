@@ -1,11 +1,16 @@
 package edu.upf.taln.uima.freeling;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
 
 import org.apache.uima.UimaContext;
@@ -33,7 +38,7 @@ import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.TokenForm;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.Dependency;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.DependencyFlavor;
-import edu.upc.freeling.*;
+import edu.upc.Jfreeling.*;
 
 /**
  * Tokenizer and sentence splitter, POS tagger using FreeLing. parser is pending
@@ -137,13 +142,18 @@ public class FreeLingWrapper
     public void initialize(UimaContext aContext) throws ResourceInitializationException
     {
         super.initialize(aContext);
-        // Modify this line to be your FreeLing installation directory
-        System.loadLibrary("freeling_javaAPI");
+
+        System.loadLibrary("Jfreeling");
         Util.initLocale("default");
         getLogger().info("Freeling, autodetect mode: "+autodetect ); 
 
        if (!this.autodetect) {
-           init(language);
+           try {
+            init(language);
+        }
+        catch (Exception e) {
+            throw new ResourceInitializationException();
+        }
        } else {       
            lgid = new LangIdent(DATA + "common/lang_ident/ident.dat"); //ident-few for less languages!
         }
@@ -151,39 +161,66 @@ public class FreeLingWrapper
 
     }
 
-    private void init(String lang)
+    private void init(String lang) throws Exception
     {   
-        if (tks.containsKey(lang)) return; 
-         // language already set       
-        // Create options set for maco analyzer.
+        if (tks.containsKey(lang))
+            return; 
+            // language already set       
+        
+        
+        // read the configuration file
+        Properties prop = new Properties();
+        InputStream input = new FileInputStream(DATA+"config/"+lang+".cfg");
+        prop.load(input);
+ 
+         // Create options set for maco analyzer.
         // Default values are Ok, except for data files.
         MacoOptions op = new MacoOptions(lang);
 
-        op.setDataFiles("", DATA + "common/punct.dat", DATA + lang + "/dicc.src",
-                DATA + lang + "/afixos.dat", "", DATA + lang + "/locucions.dat",
-                (Files.exists(Paths.get(DATA + lang + "/np.dat"))? DATA + lang + "/np.dat":""), 
-                (Files.exists(Paths.get(DATA + lang + "/quantities.dat"))? DATA + lang + "/quantities.dat":""),
-                DATA + lang + "/probabilitats.dat");
+        op.setDataFiles("", DATA + "common/punct.dat", 
+                prop.getProperty("DictionaryFile").replace("$FREELINGSHARE/", DATA),
+                prop.getProperty("AffixFile").replace("$FREELINGSHARE/", DATA), 
+                prop.getProperty("CompoundFile").replace("$FREELINGSHARE/", DATA),
+                prop.getProperty("LocutionsFile").replace("$FREELINGSHARE/", DATA),
+                prop.getProperty("NPDataFile").replace("$FREELINGSHARE/", DATA), 
+                prop.getProperty("QuantitiesFile").replace("$FREELINGSHARE/", DATA),
+                prop.getProperty("ProbabilityFile").replace("$FREELINGSHARE/", DATA));
         tks.put(lang, new Tokenizer(DATA + lang + "/tokenizer.dat"));
         sps.put(lang, new Splitter(DATA + lang + "/splitter.dat"));
         sids.put(lang, sps.get(lang).openSession());
 
         Maco mf = new Maco(op);
+        /*
         mf.setActiveOptions(false, true, true, true, // select which among created
                 true, true, false, true, // submodules are to be used.
                 true, true, true, true); // default: all created submodules
+        */ 
+        mf.setActiveOptions(
+                false, // umap 
+                prop.getProperty("NumbersDetection").contentEquals("yes"),//   num,
+                prop.getProperty("PunctuationDetection").contentEquals("yes"),//    pun,
+                prop.getProperty("DatesDetection").contentEquals("yes"),//    dat,
+                prop.getProperty("DictionarySearch").contentEquals("yes"),//    dic,
+                prop.getProperty("AffixAnalysis").contentEquals("yes"),//    aff,
+                prop.getProperty("CompoundAnalysis").contentEquals("yes"),//    comp,
+                true,//    rtk, // not found in properties.... 
+                prop.getProperty("MultiwordsDetectio").contentEquals("yes"),//    mw,
+                prop.getProperty("NERecognition").contentEquals("yes"),//    ner,
+                prop.getProperty("QuantitiesDetection").contentEquals("yes"),//    qt,
+                prop.getProperty("ProbabilityAssignment").contentEquals("yes")//    prb                       
+        );        
         mfs.put(lang, mf);
         // are used
         tgs.put(lang, new HmmTagger(DATA + lang + "/tagger.dat", true, 2));
         if (doDependency){
             if ((!useTxala) && (TreelerLangs.contains(lang)) ){
                 getLogger().info("Freeling initating Treeler parser for "+lang ); 
-                deps.put(lang,new DepTreeler(DATA + lang + "/dep_treeler/dependences.dat") );
+                deps.put(lang,new DepTreeler(prop.getProperty("DepTreelerFile").replace("$FREELINGSHARE/", DATA)) );
              } else if (TxalaLangs.contains(lang)) {
                 getLogger().info("Freeling initating Txala parser for "+lang );
                 parsers.put(lang,new ChartParser(
-                        DATA + lang + "/chunker/grammar-chunk.dat" ));
-                depTs.put(lang, new DepTxala( DATA + lang + "/dep_txala/dependences.dat",
+                        prop.getProperty("GrammarFile").replace("$FREELINGSHARE/", DATA) ));
+                depTs.put(lang, new DepTxala( prop.getProperty("DepTxalaFile").replace("$FREELINGSHARE/", DATA),
                         parsers.get(lang).getStartSymbol() ) );
             } 
         }
@@ -210,7 +247,13 @@ public class FreeLingWrapper
             }
             getLogger().info("Freeleing, the language detected for document is: " +language); 
             cas.setDocumentLanguage(language);
-            init(language);
+            try {
+                init(language);
+            }
+            catch (Exception e) {
+                getLogger().error("Freeling, error initializing language, skip document" );
+                return;
+            }
         }
        
         ListWord l = tks.get(language).tokenize(line);
@@ -253,7 +296,7 @@ public class FreeLingWrapper
         // Process every sentence.
         ListSentenceIterator sIt = new ListSentenceIterator(ls);
         while (sIt.hasNext()) {
-            edu.upc.freeling.Sentence s = sIt.next();
+            edu.upc.Jfreeling.Sentence s = sIt.next();
             // add sentence
             int sBegin = 0;
             Boolean first = true;

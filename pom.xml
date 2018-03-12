@@ -45,13 +45,18 @@
 			<version>1.9.0</version>
 		</dependency>
 		<dependency>
-			<groupId>edu.upf.freeling</groupId>
-			<artifactId>freeling</artifactId>
-			<version>4.0</version>
+			<groupId>edu.upc.jfreeling</groupId>
+			<artifactId>jFreeling</artifactId>
+			<version>4.1</version>
 			<scope>system</scope>
-			<systemPath>${basedir}/lib/freeling.jar</systemPath>
+			<systemPath>/usr/local/share/freeling/APIs/java/Jfreeling.jar</systemPath>
 		</dependency>
-
+    <dependency>
+      <groupId>de.tudarmstadt.ukp.dkpro.core</groupId>
+      <artifactId>de.tudarmstadt.ukp.dkpro.core.testing-asl</artifactId>
+      <version>1.9.0</version>
+      <scope>test</scope>
+    </dependency>
 	</dependencies>
 
 	<repositories>
