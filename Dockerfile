@@ -58,7 +58,7 @@ RUN git clone  --depth=1 git://github.com/TalnUPF/OpenMinted_Freeling.git UIMA &
 	cd UIMA && \
     mvn install  && \
     mvn dependency:build-classpath -Dmdep.outputFile=classPath.txt
+#ENTRYPOINT [/UIMA/process.sh ]
+#CMD  [ en]
 
 
-ENTRYPOINT [./UIMA/process.sh ]
-CMD  [ en]

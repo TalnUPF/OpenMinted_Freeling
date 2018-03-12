@@ -116,7 +116,7 @@ public class FreeLingWrapper
     
     // Freeling elements some of should be parameters...
     private static final String FREELINGDIR = "/usr/local/";
-    private static final String DATA = FREELINGDIR + "/share/freeling/";
+    private static final String DATA = FREELINGDIR + "share/freeling/";
     private static Set<String> TreelerLangs = new HashSet<String>(Arrays.asList("ca","de","en","es","hr","pt","sl"));   
     private static Set<String> TxalaLangs = new HashSet<String>(Arrays.asList("as","ca","en","es","gl"));
     private LangIdent lgid; 
@@ -177,10 +177,11 @@ public class FreeLingWrapper
         // Default values are Ok, except for data files.
         MacoOptions op = new MacoOptions(lang);
 
-        op.setDataFiles("", DATA + "common/punct.dat", 
+        op.setDataFiles("", 
+                DATA + "common/punct.dat", 
                 prop.getProperty("DictionaryFile").replace("$FREELINGSHARE/", DATA),
                 prop.getProperty("AffixFile").replace("$FREELINGSHARE/", DATA), 
-                prop.getProperty("CompoundFile").replace("$FREELINGSHARE/", DATA),
+                "", //prop.getProperty("CompoundFile").replace("$FREELINGSHARE/", DATA),
                 prop.getProperty("LocutionsFile").replace("$FREELINGSHARE/", DATA),
                 prop.getProperty("NPDataFile").replace("$FREELINGSHARE/", DATA), 
                 prop.getProperty("QuantitiesFile").replace("$FREELINGSHARE/", DATA),
