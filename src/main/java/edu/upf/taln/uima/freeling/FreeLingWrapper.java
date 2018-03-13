@@ -152,6 +152,7 @@ public class FreeLingWrapper
             init(language);
         }
         catch (Exception e) {
+            e.printStackTrace();
             throw new ResourceInitializationException();
         }
        } else {       
@@ -179,13 +180,17 @@ public class FreeLingWrapper
 
         op.setDataFiles("", 
                 DATA + "common/punct.dat", 
-                prop.getProperty("DictionaryFile").replace("$FREELINGSHARE/", DATA),
-                prop.getProperty("AffixFile").replace("$FREELINGSHARE/", DATA), 
-                "", //prop.getProperty("CompoundFile").replace("$FREELINGSHARE/", DATA),
-                prop.getProperty("LocutionsFile").replace("$FREELINGSHARE/", DATA),
-                prop.getProperty("NPDataFile").replace("$FREELINGSHARE/", DATA), 
-                prop.getProperty("QuantitiesFile").replace("$FREELINGSHARE/", DATA),
-                prop.getProperty("ProbabilityFile").replace("$FREELINGSHARE/", DATA));
+                prop.getProperty("DictionaryFile").replace("$FREELINGSHARE/", DATA).trim(),
+                prop.getProperty("AffixFile").replace("$FREELINGSHARE/", DATA).trim(), 
+                prop.getProperty("CompoundFile").replace("$FREELINGSHARE/", DATA).trim(),
+                prop.getProperty("LocutionsFile").replace("$FREELINGSHARE/", DATA).trim(),
+                prop.getProperty("NPDataFile").replace("$FREELINGSHARE/", DATA).trim(), 
+                prop.getProperty("QuantitiesFile").replace("$FREELINGSHARE/", DATA).trim(),
+                prop.getProperty("ProbabilityFile").replace("$FREELINGSHARE/", DATA).trim());
+        
+
+        
+        
         tks.put(lang, new Tokenizer(DATA + lang + "/tokenizer.dat"));
         sps.put(lang, new Splitter(DATA + lang + "/splitter.dat"));
         sids.put(lang, sps.get(lang).openSession());
@@ -198,17 +203,17 @@ public class FreeLingWrapper
         */ 
         mf.setActiveOptions(
                 false, // umap 
-                prop.getProperty("NumbersDetection").contentEquals("yes"),//   num,
-                prop.getProperty("PunctuationDetection").contentEquals("yes"),//    pun,
-                prop.getProperty("DatesDetection").contentEquals("yes"),//    dat,
-                prop.getProperty("DictionarySearch").contentEquals("yes"),//    dic,
-                prop.getProperty("AffixAnalysis").contentEquals("yes"),//    aff,
-                prop.getProperty("CompoundAnalysis").contentEquals("yes"),//    comp,
+                prop.getProperty("NumbersDetection").trim().contentEquals("yes"),//   num,
+                prop.getProperty("PunctuationDetection").trim().contentEquals("yes"),//    pun,
+                prop.getProperty("DatesDetection").trim().contentEquals("yes"),//    dat,
+                prop.getProperty("DictionarySearch").trim().contentEquals("yes"),//    dic,
+                prop.getProperty("AffixAnalysis").trim().contentEquals("yes"),//    aff,
+                prop.getProperty("CompoundAnalysis").trim().contentEquals("yes"),//    comp,
                 true,//    rtk, // not found in properties.... 
-                prop.getProperty("MultiwordsDetectio").contentEquals("yes"),//    mw,
-                prop.getProperty("NERecognition").contentEquals("yes"),//    ner,
-                prop.getProperty("QuantitiesDetection").contentEquals("yes"),//    qt,
-                prop.getProperty("ProbabilityAssignment").contentEquals("yes")//    prb                       
+                prop.getProperty("MultiwordsDetection").trim().contentEquals("yes"),//    mw,
+                prop.getProperty("NERecognition").trim().contentEquals("yes"),//    ner,
+                prop.getProperty("QuantitiesDetection").trim().contentEquals("yes"),//    qt,
+                prop.getProperty("ProbabilityAssignment").trim().contentEquals("yes")//    prb                       
         );        
         mfs.put(lang, mf);
         // are used
