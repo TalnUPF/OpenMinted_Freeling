@@ -46,8 +46,6 @@ RUN mkdir build && \
 	cmake -DJAVA_API=ON .. &&\
 	make install
 
-
-ENV LD_LIBRARY_PATH=/usr/local/lib/:/Freeling/APIs/java
      
 # Cleanup
 RUN apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
