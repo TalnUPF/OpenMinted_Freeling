@@ -1,12 +1,7 @@
 package edu.upf.taln.uima.freeling;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,10 +18,6 @@ import org.apache.uima.fit.descriptor.TypeCapability;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 
-import static org.apache.uima.util.Level.FINE;
-import static org.apache.uima.util.Level.INFO;
-import static org.apache.uima.util.Level.WARNING;
-
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.pos.POSUtils;
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
 import de.tudarmstadt.ukp.dkpro.core.api.parameter.ComponentParameters;
@@ -38,7 +29,24 @@ import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.Token;
 import de.tudarmstadt.ukp.dkpro.core.api.segmentation.type.TokenForm;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.Dependency;
 import de.tudarmstadt.ukp.dkpro.core.api.syntax.type.dependency.DependencyFlavor;
-import edu.upc.Jfreeling.*;
+import edu.upc.Jfreeling.ChartParser;
+import edu.upc.Jfreeling.DepTree;
+import edu.upc.Jfreeling.DepTreeler;
+import edu.upc.Jfreeling.DepTxala;
+import edu.upc.Jfreeling.HmmTagger;
+import edu.upc.Jfreeling.LangIdent;
+import edu.upc.Jfreeling.ListSentence;
+import edu.upc.Jfreeling.ListSentenceIterator;
+import edu.upc.Jfreeling.ListWord;
+import edu.upc.Jfreeling.ListWordIterator;
+import edu.upc.Jfreeling.Maco;
+import edu.upc.Jfreeling.MacoOptions;
+import edu.upc.Jfreeling.SWIGTYPE_p_splitter_status;
+import edu.upc.Jfreeling.Splitter;
+import edu.upc.Jfreeling.Tokenizer;
+import edu.upc.Jfreeling.TreePreorderIteratorDepnode;
+import edu.upc.Jfreeling.Util;
+import edu.upc.Jfreeling.Word;
 
 /**
  * Tokenizer and sentence splitter, POS tagger using FreeLing. parser is pending
@@ -117,8 +125,9 @@ public class FreeLingWrapper
     // Freeling elements some of should be parameters...
     private static final String FREELINGDIR = "/usr/local/";
     private static final String DATA = FREELINGDIR + "share/freeling/";
-    private static Set<String> TreelerLangs = new HashSet<String>(Arrays.asList("ca","de","en","es","hr","pt","sl"));   
-    private static Set<String> TxalaLangs = new HashSet<String>(Arrays.asList("as","ca","en","es","gl"));
+    // this could be taken from config files...
+    private static Set<String> TreelerLangs = new HashSet<String>(Arrays.asList("ca","de","en","es","pt","sl"));   
+    private static Set<String> TxalaLangs = new HashSet<String>(Arrays.asList( "ca","en","es","as","gl" )); //removed "as" and "gl"
     private LangIdent lgid; 
 
     private HashMap<String, Tokenizer> tks= new HashMap<>();
@@ -134,8 +143,8 @@ public class FreeLingWrapper
 
     private MappingProvider posMappingProvider;
     private MappingProvider depMappingProvider;
-   private JCas aJCas;
-   
+    private JCas aJCas;
+
 
 
     @Override
@@ -190,7 +199,6 @@ public class FreeLingWrapper
         
 
         
-        
         tks.put(lang, new Tokenizer(DATA + lang + "/tokenizer.dat"));
         sps.put(lang, new Splitter(DATA + lang + "/splitter.dat"));
         sids.put(lang, sps.get(lang).openSession());
@@ -214,7 +222,9 @@ public class FreeLingWrapper
                 prop.getProperty("NERecognition").trim().contentEquals("yes"),//    ner,
                 prop.getProperty("QuantitiesDetection").trim().contentEquals("yes"),//    qt,
                 prop.getProperty("ProbabilityAssignment").trim().contentEquals("yes")//    prb                       
-        );        
+        );  
+        
+          
         mfs.put(lang, mf);
         // are used
         tgs.put(lang, new HmmTagger(DATA + lang + "/tagger.dat", true, 2));
@@ -223,12 +233,13 @@ public class FreeLingWrapper
                 getLogger().info("Freeling initating Treeler parser for "+lang ); 
                 deps.put(lang,new DepTreeler(prop.getProperty("DepTreelerFile").replace("$FREELINGSHARE/", DATA)) );
              } else if (TxalaLangs.contains(lang)) {
+                 
                 getLogger().info("Freeling initating Txala parser for "+lang );
                 parsers.put(lang,new ChartParser(
                         prop.getProperty("GrammarFile").replace("$FREELINGSHARE/", DATA) ));
                 depTs.put(lang, new DepTxala( prop.getProperty("DepTxalaFile").replace("$FREELINGSHARE/", DATA),
                         parsers.get(lang).getStartSymbol() ) );
-            } 
+              } 
         }
         // UIMA mapping providers
 
@@ -273,6 +284,7 @@ public class FreeLingWrapper
         boolean doDeps=doDependency;
         if (doDependency){  
             if (depTs.get(language)!=null){
+                parsers.get(language).analyze( ls );             
                 depTs.get(language).analyze(ls);
             } 
             else if (deps.get(language)!=null) {
@@ -333,7 +345,7 @@ public class FreeLingWrapper
                 try {
                     Type defposTagT=posMappingProvider.getTagType("*");
                     Type posTagT=posMappingProvider.getTagType(w.getTag());
-                    int l=w.getTag().length();
+                    int l=w.getTag().length()+1;
                     while(posTagT==defposTagT && --l>0){
                      posTagT = posMappingProvider.getTagType(w.getTag().substring(0, l)+"*");
                     }
@@ -344,7 +356,8 @@ public class FreeLingWrapper
                     token.setPos(posTag);
                 }
                 catch (Exception e) {
-                     getLogger().error("error processing token "+ w.getForm() + " with POS tag" + w.getTag());
+                    
+                     getLogger().error("error processing token "+ w.getForm() + " with POS tag: " + w.getTag() +  e.getMessage());
                 }
                 tokens[i++] = token;
             } //end for tokens

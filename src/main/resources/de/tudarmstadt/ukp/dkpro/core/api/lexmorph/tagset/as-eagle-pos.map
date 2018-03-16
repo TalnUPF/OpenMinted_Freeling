@@ -50,15 +50,12 @@ RG=POS_ADV
 SP=POS_ADP
 #
 #Verb (7 digits)
-VM**=POS_VERB
-VA**=POS_VERB
-VS**=POS_VERB
+VM*=POS_VERB
+VA*=POS_VERB
+VS*=POS_VERB
 #
 #Number (2 digits)
-Zd=POS_NUM
-Zm=POS_NUM
-Zp=POS_NUM
-Zu=POS_NUM
+Z*=POS_NUM
 #
 #Date (1 digit)
 W=POS_X
