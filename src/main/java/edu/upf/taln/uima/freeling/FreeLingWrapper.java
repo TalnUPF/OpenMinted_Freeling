@@ -256,20 +256,23 @@ public class FreeLingWrapper
     {
         
         if (autodetect){
-            // language=cas.getDocumentLanguage();
-            language = lgid.identifyLanguage(line);
-            if (language.equals("none")){
-                getLogger().error("Freeling, error in language detection, skip document" );
-                return;
-            }
-            getLogger().info("Freeleing, the language detected for document is: " +language); 
-            cas.setDocumentLanguage(language);
-            try {
-                init(language);
-            }
-            catch (Exception e) {
-                getLogger().error("Freeling, error initializing language, skip document" );
-                return;
+            language=cas.getDocumentLanguage();
+            if (language!=null){
+                language = lgid.identifyLanguage(line);
+                if (language.equals("none")){
+                    getLogger().error("Freeling, error in language detection, skip document" );
+                    return;
+                }
+                getLogger().info("Freeleing, the language detected for document is: " +language); 
+                cas.setDocumentLanguage(language);
+                try {
+                    init(language);
+                }
+                catch (Exception e) {
+                    getLogger().error("Freeling, error initializing language, skip document" );
+                    return;
+                }
+                cas.setDocumentLanguage(language);
             }
         }
        
@@ -305,9 +308,8 @@ public class FreeLingWrapper
             depMappingProvider.configure(cas);
          }
         catch (AnalysisEngineProcessException e1) {
-            // TODO Auto-generated catch block
-            // use the default log system?
-            e1.printStackTrace();
+            getLogger().error("error on configuring map providers for that language, skip document" );
+            return;
         }
         int begin;
         int end = 0;
