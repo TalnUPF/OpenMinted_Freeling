@@ -7,7 +7,7 @@ key="$1"
 
 case $key in
     --input)
-    INPUT="$2/*.xmi"
+    INPUT="'$2/*.xmi'"
     shift # past argument
     shift # past value
     ;;
