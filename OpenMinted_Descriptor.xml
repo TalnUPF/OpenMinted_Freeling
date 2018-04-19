@@ -59,8 +59,8 @@
       <ns0:distributionInfos>
          <ns0:componentDistributionInfo>
             <ns0:componentDistributionForm>dockerImage</ns0:componentDistributionForm>
-            <ns0:distributionLocation>https://hub.docker.com/r/taln/openminted_freeling/</ns0:distributionLocation>
-            <ns0:command>docker run -v /var/data/openminted/input:/input -ti -v /var/data/openminted/output:/output openminted_freeling process.sh --input /input --output /output --param:language=en</ns0:command>
+            <ns0:distributionLocation>taln/openminted_freeling:1.0</ns0:distributionLocation>
+            <ns0:command>process.sh</ns0:command>
          </ns0:componentDistributionInfo>
       </ns0:distributionInfos>
       <ns0:rightsInfo>
@@ -76,22 +76,22 @@
       </ns0:rightsInfo>
       <ns0:parameterInfos>
          <ns0:parameterInfo>
-            <ns0:parameterName>Language</ns0:parameterName>
-            <ns0:parameterLabel>lang</ns0:parameterLabel>
+            <ns0:parameterName>language</ns0:parameterName>
+            <ns0:parameterLabel>language</ns0:parameterLabel>
             <ns0:parameterDescription>language of the documents . It can be "auto" for using the languange identification facilities</ns0:parameterDescription>
             <ns0:parameterType>string</ns0:parameterType>
             <ns0:optional>false</ns0:optional>
             <ns0:multiValue>false</ns0:multiValue>
+            <ns0:defaultValue>auto</ns0:multiValue>
          </ns0:parameterInfo>
       </ns0:parameterInfos>
       <ns0:inputContentResourceInfo>
-         <ns0:processingResourceType>document</ns0:processingResourceType>
-         <ns0:dataFormats>
-            <ns0:dataFormatInfo>
-               <ns0:dataFormat>http://w3id.org/meta-share/omtd-share/UimaCasFormat</ns0:dataFormat>
-               <ns0:dataFormatOther>XMI</ns0:dataFormatOther>
-            </ns0:dataFormatInfo>
-         </ns0:dataFormats>
+         <ns0:processingResourceType>corpus</ns0:processingResourceType>
+		 <ns0:dataFormats>
+			<ns0:dataFormatInfo>
+				<ns0:dataFormat>http://w3id.org/meta-share/omtd-share/Xmi</ns0:dataFormat>
+			</ns0:dataFormatInfo>
+		</ns0:dataFormats>
          <ns0:characterEncodings>
             <ns0:characterEncoding>UTF-8</ns0:characterEncoding>
          </ns0:characterEncodings>
@@ -106,19 +106,15 @@
             <ns0:language>sl</ns0:language>
          </ns0:languages>
          <ns0:annotationTypes>
-            <ns0:annotationTypeInfo>
-               <ns0:annotationType>http://w3id.org/meta-share/omtd-share/StructuralAnnotationType</ns0:annotationType>
-            </ns0:annotationTypeInfo>
          </ns0:annotationTypes>
       </ns0:inputContentResourceInfo>
       <ns0:outputResourceInfo>
-         <ns0:processingResourceType>document</ns0:processingResourceType>
-         <ns0:dataFormats>
-            <ns0:dataFormatInfo>
-               <ns0:dataFormat>http://w3id.org/meta-share/omtd-share/UimaCasFormat</ns0:dataFormat>
-               <ns0:dataFormatOther>XMI</ns0:dataFormatOther>
-            </ns0:dataFormatInfo>
-         </ns0:dataFormats>
+         <ns0:processingResourceType>corpus</ns0:processingResourceType>
+		 <ns0:dataFormats>
+			<ns0:dataFormatInfo>
+				<ns0:dataFormat>http://w3id.org/meta-share/omtd-share/Xmi</ns0:dataFormat>
+			</ns0:dataFormatInfo>
+		</ns0:dataFormats>
          <ns0:characterEncodings>
             <ns0:characterEncoding>UTF-8</ns0:characterEncoding>
          </ns0:characterEncodings>

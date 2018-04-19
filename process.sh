@@ -1,5 +1,6 @@
 #!/bin/bash
-
+#language default value
+LANG="auto" 
 POSITIONAL=()
 while [[ $# -gt 0 ]]
 do
