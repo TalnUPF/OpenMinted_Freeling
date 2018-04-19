@@ -62,7 +62,10 @@ COPY . UIMA
 RUN	cd UIMA && \
     mvn install  && \
     mvn dependency:build-classpath -Dmdep.outputFile=classPath.txt
-#ENTRYPOINT [/UIMA/process.sh ]
-#CMD  [ en]
+    
+RUN chmod a+x /UIMA/process.sh &&   cp /UIMA/process.sh /bin/process.sh 
+    
+#ENTRYPOINT [process.sh ]
+#CMD  [process.sh]
 
 
