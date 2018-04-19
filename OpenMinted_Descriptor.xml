@@ -3,9 +3,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ns0:componentMetadataRecord xmlns:ns0="http://www.meta-share.org/OMTD-SHARE_XMLSchema">
    <ns0:metadataHeaderInfo>
-      <ns0:metadataRecordIdentifier metadataIdentifierSchemeName="OMTD">23a19913-8640-49bf-bb54-de9a588ed800</ns0:metadataRecordIdentifier>
-      <ns0:metadataCreationDate>2018-04-12Z</ns0:metadataCreationDate>
-      <ns0:metadataCreators>
+       <ns0:metadataCreators>
          <ns0:metadataCreator>
             <ns0:surname>Codina Filbà</ns0:surname>
             <ns0:givenName>Joan</ns0:givenName>
@@ -82,7 +80,7 @@
             <ns0:parameterType>string</ns0:parameterType>
             <ns0:optional>false</ns0:optional>
             <ns0:multiValue>false</ns0:multiValue>
-            <ns0:defaultValue>auto</ns0:multiValue>
+            <ns0:defaultValue>auto</ns0:defaultValue>
          </ns0:parameterInfo>
       </ns0:parameterInfos>
       <ns0:inputContentResourceInfo>
