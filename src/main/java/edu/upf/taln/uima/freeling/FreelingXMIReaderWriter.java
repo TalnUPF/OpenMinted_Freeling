@@ -85,7 +85,8 @@ public class FreelingXMIReaderWriter
                 if (args[2].equals("auto")){
                     SimplePipeline.runPipeline(
                             createReaderDescription(XmiReader.class,
-                                    XmiReader.PARAM_SOURCE_LOCATION, args[0]),
+                                    XmiReader.PARAM_SOURCE_LOCATION, args[0],
+                                    XmiReader.PARAM_PATTERNS, "[+]**/*.xmi"),
                             createEngineDescription(FreeLingWrapper.class,
                                     FreeLingWrapper.PARAM_LANGUAGE, args[2],
                                     FreeLingWrapper.PARAM_DO_DEPENDECY_PARSING,true,
