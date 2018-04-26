@@ -50,12 +50,11 @@ public class FreelingXMIReaderWriter
     {   
         
         if (args.length>3 && args[3].equals("txt")){
-               System.out.println("second param -"+args[2]+ "-");
-               System.out.println("second param -"+args[2]+ "-");
                if (args[2].equals("auto")){
                    SimplePipeline.runPipeline(
                            createReaderDescription(TextReader.class,
-                                   TextReader.PARAM_SOURCE_LOCATION, args[0]),
+                                   TextReader.PARAM_SOURCE_LOCATION, args[0],
+                                   TextReader.PARAM_PATTERNS, "*.txt"),
                            createEngineDescription(FreeLingWrapper.class,
                                    FreeLingWrapper.PARAM_LANGUAGE, args[2],
                                    FreeLingWrapper.PARAM_DO_DEPENDECY_PARSING,true,
@@ -66,10 +65,10 @@ public class FreelingXMIReaderWriter
                                    XmiWriter.PARAM_OVERWRITE,true));
                                               
                 } else {     
-                      System.out.println("second param 2 -"+args[2]+ "-");
-                        SimplePipeline.runPipeline(
+                         SimplePipeline.runPipeline(
                         createReaderDescription(TextReader.class,
                                 TextReader.PARAM_SOURCE_LOCATION, args[0],
+                                TextReader.PARAM_PATTERNS, "*.txt",
                                 TextReader.PARAM_LANGUAGE, args[2]),
                         createEngineDescription(FreeLingWrapper.class,
                                 FreeLingWrapper.PARAM_LANGUAGE,  args[2],
@@ -86,7 +85,7 @@ public class FreelingXMIReaderWriter
                     SimplePipeline.runPipeline(
                             createReaderDescription(XmiReader.class,
                                     XmiReader.PARAM_SOURCE_LOCATION, args[0],
-                                    XmiReader.PARAM_PATTERNS, "[+]**/*.xmi"),
+                                    XmiReader.PARAM_PATTERNS, "*.xmi"),
                             createEngineDescription(FreeLingWrapper.class,
                                     FreeLingWrapper.PARAM_LANGUAGE, args[2],
                                     FreeLingWrapper.PARAM_DO_DEPENDECY_PARSING,true,
@@ -99,6 +98,7 @@ public class FreelingXMIReaderWriter
                SimplePipeline.runPipeline(
                         createReaderDescription(XmiReader.class,
                                 XmiReader.PARAM_SOURCE_LOCATION, args[0],
+                                XmiReader.PARAM_PATTERNS, "*.xmi",
                                 XmiReader.PARAM_LANGUAGE, args[2]),
                         createEngineDescription(FreeLingWrapper.class,
                                 FreeLingWrapper.PARAM_LANGUAGE,  args[2],
