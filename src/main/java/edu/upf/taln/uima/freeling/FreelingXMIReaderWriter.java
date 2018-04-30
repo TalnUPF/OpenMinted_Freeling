@@ -92,7 +92,8 @@ public class FreelingXMIReaderWriter
                                     FreeLingWrapper.PARAM_USE_RULE_BASED,false,
                                     FreeLingWrapper.PARAM_LANGUAGE_AUTODETECT,true),
                             createEngineDescription(XmiWriter.class,
-                                    XmiWriter.PARAM_TARGET_LOCATION, args[1]));
+                                    XmiWriter.PARAM_TARGET_LOCATION, args[1],
+                                    XmiWriter.PARAM_OVERWRITE,true ));
                    
                 } else {       
                SimplePipeline.runPipeline(
@@ -106,7 +107,8 @@ public class FreelingXMIReaderWriter
                                 FreeLingWrapper.PARAM_USE_RULE_BASED,false,
                                 FreeLingWrapper.PARAM_LANGUAGE_AUTODETECT,false),
                         createEngineDescription(XmiWriter.class,
-                                XmiWriter.PARAM_TARGET_LOCATION, args[1]));
+                                XmiWriter.PARAM_TARGET_LOCATION, args[1],
+                                XmiWriter.PARAM_OVERWRITE,true ));
                 }
             } else {
                 System.out.println("arguments are \n - input folder, \n - output foder \n - language  and \n -if input not in xmi format then it can be txt");

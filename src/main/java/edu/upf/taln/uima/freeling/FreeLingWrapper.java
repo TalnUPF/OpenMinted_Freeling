@@ -265,16 +265,15 @@ public class FreeLingWrapper
                 .createDependencyMappingProvider(DependencyMappingLocation, "freeling", lang);
         
     }
-
     @Override
-    protected void process(JCas cas, String line, int SentStart)
+    public void process(JCas cas)
         throws AnalysisEngineProcessException
     {
-        
+        String text = cas.getDocumentText();
         if (autodetect){
             language=cas.getDocumentLanguage();
             if (language!=null){
-                language = lgid.identifyLanguage(line);
+                language = lgid.identifyLanguage(text);
                 if (language.equals("none")){
                     getLogger().error("Freeling, error in language detection, skip document" );
                     return;
@@ -291,16 +290,29 @@ public class FreeLingWrapper
                 cas.setDocumentLanguage(language);
             }
         }
-       
+        process(cas, text.substring(0, text.length()), 0);
+    }
+            
+    @Override
+    protected void process(JCas cas, String line, int SentStart)
+        throws AnalysisEngineProcessException
+    {
+          
+        //getLogger().info(" tokenizer from"+ SentStart + " size "+ line.length() + "  "+ line );
+
         ListWord l = tks.get(language).tokenize(line);
         // Split the tokens into distinct sentences.
-        ls = sps.get(language).split(sids.get(language), l, false);
+        // getLogger().info(" sentence split" );
+       ls = sps.get(language).split(sids.get(language), l, false);
         // Perform morphological analysis
+        //getLogger().info(" morpho" );
         mfs.get(language).analyze(ls);
         // Perform part-of-speech tagging.
+        // getLogger().info(" POS" );
         tgs.get(language).analyze(ls);
         // Dependency parser
-        boolean doDeps=doDependency;
+        //getLogger().info(" dependency" );
+       boolean doDeps=doDependency;
         if (doDependency){  
             if (depTs.get(language)!=null){
                 parsers.get(language).analyze( ls );             
@@ -312,6 +324,7 @@ public class FreeLingWrapper
                 doDeps=false;
         }
         aJCas = cas;
+        // getLogger().info(" export to UIMA" );
         exportToUIMA(ls, SentStart,doDeps);
     }
 
@@ -342,14 +355,17 @@ public class FreeLingWrapper
             // iterate over tokens
             while (wIt.hasNext()) {
                 Word w = wIt.next();
-                begin = (int) w.getSpanStart();
+                 begin = (int) w.getSpanStart();
                 if (first) {
                     first = false;
                     sBegin = begin;
                 }
                 end = (int) w.getSpanFinish();
                 // create token
-                Token token = this.createToken(aJCas, start + begin, start + end);
+                //Token token = this.createToken(aJCas, start + begin, start + end);
+                Token token = new Token(aJCas, start + begin, start + end);
+                token.addToIndexes();
+               try {
                 //create  lema
                 Lemma lemma = new Lemma(aJCas, start + begin, start + end);
                 lemma.setValue(w.getLemma());
@@ -360,7 +376,7 @@ public class FreeLingWrapper
                 f.setValue(w.getForm());
                 token.setForm(f);
                 //create  POS
-                try {
+                 //   getLogger().info(" processing token from: " + (start + begin) +" to:" +(start + end)+ "  token:" + w.getForm() + " with POS tag: " + w.getTag() );
                     Type defposTagT=posMappingProvider.getTagType("*");
                     Type posTagT=posMappingProvider.getTagType(w.getTag());
                     int l=w.getTag().length()+1;
@@ -375,8 +391,10 @@ public class FreeLingWrapper
                 }
                 catch (Exception e) {
                     
-                     getLogger().error("error processing token "+ w.getForm() + " with POS tag: " + w.getTag() +  e.getMessage());
-                }
+                     getLogger().error("error processing token from: " + (start + begin) +" to:" +(start + end)+ "  token:" + w.getForm() + " with POS tag: " + w.getTag() +"  " + e.getMessage() );
+                     e.printStackTrace();
+                     if (token==null)  getLogger().error("error token null");
+                 }
                 tokens[i++] = token;
             } //end for tokens
                 //Add dependencies.       

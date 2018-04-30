@@ -37,4 +37,4 @@ echo LANG    = "${LANG}"
 export LD_LIBRARY_PATH=/usr/local/share/freeling/APIs/java/
 
 export CLASSPATH="/UIMA/target/FreeLingWrapper-0.1-SNAPSHOT.jar":$(</UIMA/classPath.txt)
-java -Xmx650m -cp $CLASSPATH  edu.upf.taln.uima.freeling.FreelingXMIReaderWriter ${INPUT} ${OUTPUT}  ${LANG} xmi
+java -Xmx1024m -cp $CLASSPATH  edu.upf.taln.uima.freeling.FreelingXMIReaderWriter ${INPUT} ${OUTPUT}  ${LANG} xmi
