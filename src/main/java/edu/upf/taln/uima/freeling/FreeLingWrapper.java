@@ -298,7 +298,7 @@ public class FreeLingWrapper
         throws AnalysisEngineProcessException
     {
           
-        //getLogger().info(" tokenizer from"+ SentStart + " size "+ line.length() + "  "+ line );
+        getLogger().info(" start processing from"+ SentStart + " size "+ line.length() );
 
         ListWord l = tks.get(language).tokenize(line);
         // Split the tokens into distinct sentences.
