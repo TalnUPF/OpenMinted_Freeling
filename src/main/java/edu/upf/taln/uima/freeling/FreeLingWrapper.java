@@ -416,11 +416,11 @@ public class FreeLingWrapper
                         else {
                             Token sourceToken = tokens[(int) node.getParent().getWord().getPosition()];
                             Token targetToken = tokens[n];
-                            Type depRel = depMappingProvider.getTagType(node.getParent().getLabel());
+                            Type depRel = depMappingProvider.getTagType(node.getLabel());
                             Dependency dep = (Dependency) cas.createFS(depRel);
                             dep.setGovernor(sourceToken);
                             dep.setDependent(targetToken);
-                            dep.setDependencyType(node.getParent().getLabel());
+                            dep.setDependencyType(node.getLabel());
                             dep.setFlavor(DependencyFlavor.BASIC);
                             dep.setBegin(dep.getDependent().getBegin());
                             dep.setEnd(dep.getDependent().getEnd());
