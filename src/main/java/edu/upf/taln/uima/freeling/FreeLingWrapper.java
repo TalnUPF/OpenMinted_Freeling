@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -33,6 +35,7 @@ import org.apache.uima.fit.descriptor.ResourceMetaData;
 import org.apache.uima.fit.descriptor.TypeCapability;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
+
 
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.pos.POSUtils;
 import de.tudarmstadt.ukp.dkpro.core.api.lexmorph.type.pos.POS;
@@ -272,8 +275,10 @@ public class FreeLingWrapper
         String text = cas.getDocumentText();
         if (autodetect){
             language=cas.getDocumentLanguage();
-            if (language!=null){
-                language = lgid.identifyLanguage(text);
+            if (language==null || language.equalsIgnoreCase("x-unspecified")){
+                // take the first 800 characters (200 words) Find what could be an end of sentence
+
+                language = lgid.identifyLanguage(subStringForDetion(text));
                 if (language.equals("none")){
                     getLogger().error("Freeling, error in language detection, skip document" );
                     return;
@@ -293,6 +298,25 @@ public class FreeLingWrapper
         process(cas, text.substring(0, text.length()), 0);
     }
             
+    private String subStringForDetion(String text)
+    {
+        if (text.length()<1000) {
+            // getLogger().info(" full text");
+            return text;
+        }
+        // find the first end of sentence after the position 800
+        // we look for a word in lower case followed by a dot.
+        Pattern pattern = Pattern.compile("[a-z]+\\."); 
+        Matcher match = pattern.matcher(text.substring(800));
+        if (match.find()) {
+            // getLogger().info(" found at pos" + match.end() + "text : " + text.substring(0, 800+match.end()-1));
+            return text.substring(0, 800+match.end()-1);
+        }               
+        // not lucky              
+        //getLogger().info(" no match");
+        return text;
+    }
+
     @Override
     protected void process(JCas cas, String line, int SentStart)
         throws AnalysisEngineProcessException
@@ -384,8 +408,8 @@ public class FreeLingWrapper
                      posTagT = posMappingProvider.getTagType(w.getTag().substring(0, l)+"*");
                     }
                     POS posTag = (POS) cas.createAnnotation(posTagT, start + begin, start + end);
-                    posTag.setPosValue(w.getTag());
-                    POSUtils.assignCoarseValue(posTag);
+                    posTag.setPosValue(posTag.getPosValue());
+                    posTag.setCoarseValue(w.getTag());
                     posTag.addToIndexes();
                     token.setPos(posTag);
                 }
