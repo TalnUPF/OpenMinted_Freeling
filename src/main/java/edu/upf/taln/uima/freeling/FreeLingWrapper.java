@@ -285,16 +285,17 @@ public class FreeLingWrapper
                 }
                 getLogger().info("Freeleing, the language detected for document is: " +language); 
                 cas.setDocumentLanguage(language);
-                try {
-                    init(language);
-                }
-                catch (Exception e) {
-                    getLogger().error("Freeling, error initializing language, skip document" );
-                    return;
-                }
+
                 cas.setDocumentLanguage(language);
             }
-        }
+            try {
+                init(language);
+            }
+            catch (Exception e) {
+                getLogger().error("Freeling, error initializing language, skip document" );
+                return;
+            }       
+           }
         process(cas, text.substring(0, text.length()), 0);
     }
             
